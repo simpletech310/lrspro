@@ -8,10 +8,15 @@ export const metadata: Metadata = {
   openGraph: { type: 'website', locale: 'en_US', url: 'https://lrsservepros.com', siteName: 'Left Right Serve & Sign Pros' },
 }
 
+import { Toaster } from '@/components/ui/toaster'
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster />
+      </body>
     </html>
   )
 }

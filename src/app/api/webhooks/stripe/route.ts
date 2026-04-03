@@ -47,6 +47,31 @@ export async function POST(request: NextRequest) {
       content: `Payment of $${((session.amount_total||0)/100).toFixed(2)} received via Stripe.`,
       is_client_visible: true,
     })
+
+    // Fire Transactional Email to Client
+    if (newCase.client?.email) {
+      try {
+        const { render } = await import('@react-email/render')
+        const OrderConfirmation = (await import('@/emails/OrderConfirmation')).default
+        const { resend, FROM_EMAIL, FROM_NAME } = await import('@/lib/resend/client')
+        
+        const html = await render(OrderConfirmation({
+          customerName: newCase.client.full_name || 'Valued Client',
+          caseNumber: newCase.case_number,
+          serviceName: newCase.service?.name || newCase.service_type,
+          totalPaid: `$${((session.amount_total||0)/100).toFixed(2)}`
+        }))
+
+        await resend.emails.send({
+          from: `${FROM_NAME} <${FROM_EMAIL}>`,
+          to: newCase.client.email,
+          subject: `Order Confirmation - Case ${newCase.case_number}`,
+          html: html,
+        })
+      } catch (emailError) {
+        console.error('Failed to send order confirmation email:', emailError)
+      }
+    }
   }
   return NextResponse.json({ received: true })
 }

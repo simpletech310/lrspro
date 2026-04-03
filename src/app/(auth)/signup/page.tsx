@@ -3,23 +3,46 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+
+const signupSchema = z.object({
+  full_name: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
+  company: z.string().optional(),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+})
 
 export default function SignupPage() {
-  const [form, setForm] = useState({ full_name:'', email:'', password:'', company:'', phone:'' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<z.infer<typeof signupSchema>>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { full_name: '', email: '', phone: '', company: '', password: '' },
+  })
+
+  const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     setLoading(true)
     setError('')
     const { error: authError } = await supabase.auth.signUp({
-      email: form.email, password: form.password,
-      options: { data: { full_name: form.full_name } }
+      email: values.email, password: values.password,
+      options: { data: { full_name: values.full_name, phone: values.phone, company: values.company } }
     })
-    if (authError) { setError(authError.message); setLoading(false); return }
+    
+    if (authError) { 
+      setError(authError.message)
+      setLoading(false)
+      return 
+    }
+    
     router.push('/portal/dashboard')
   }
 
@@ -34,24 +57,35 @@ export default function SignupPage() {
           <p className="text-slate-400 mt-2">Join our client portal</p>
         </div>
         <div className="bg-white rounded-sm shadow-elevated p-8">
-          <form onSubmit={handleSignup} className="space-y-4">
-            {([['full_name','Full Name','text',true],['email','Email Address','email',true],['phone','Phone','tel',false],['company','Company/Firm','text',false]] as const).map(([field,label,type,req])=>(
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {([
+              ['full_name','Full Name','text',true],
+              ['email','Email Address','email',true],
+              ['phone','Phone','tel',false],
+              ['company','Company/Firm','text',false]
+            ] as const).map(([field,label,type,req])=>(
               <div key={field}>
-                <label className="block text-sm font-medium text-[#0A1628] mb-1">{label}{req&&' *'}</label>
-                <input type={type} required={req} value={form[field as keyof typeof form]} onChange={e=>setForm(p=>({...p,[field]:e.target.value}))}
-                  className="w-full border border-slate-200 rounded-sm px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/30 focus:border-[#C9A84C]" />
+                <Label className="text-[#0A1628] mb-1.5 block">{label}{req&&' *'}</Label>
+                <Input type={type} {...form.register(field as "full_name" | "email" | "phone" | "company")}
+                  className={`bg-slate-50 focus-visible:ring-[#C9A84C] ${form.formState.errors[field as keyof typeof form.formState.errors] ? 'border-red-500 focus-visible:ring-red-500' : ''}`} />
+                {form.formState.errors[field as keyof typeof form.formState.errors] && (
+                   <p className="text-red-500 text-xs mt-1 font-medium">{form.formState.errors[field as keyof typeof form.formState.errors]?.message}</p>
+                )}
               </div>
             ))}
             <div>
-              <label className="block text-sm font-medium text-[#0A1628] mb-1">Password *</label>
-              <input type="password" required minLength={8} value={form.password} onChange={e=>setForm(p=>({...p,password:e.target.value}))}
-                className="w-full border border-slate-200 rounded-sm px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/30 focus:border-[#C9A84C]" />
+              <Label className="text-[#0A1628] mb-1.5 block">Password *</Label>
+              <Input type="password" {...form.register('password')}
+                className={`bg-slate-50 focus-visible:ring-[#C9A84C] ${form.formState.errors.password ? 'border-red-500 focus-visible:ring-red-500' : ''}`} />
+              {form.formState.errors.password && <p className="text-red-500 text-xs mt-1 font-medium">{form.formState.errors.password.message}</p>}
             </div>
-            {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-sm">{error}</p>}
-            <button type="submit" disabled={loading}
-              className="w-full bg-[#0A1628] text-[#C9A84C] py-3 font-semibold rounded-sm hover:bg-[#112240] transition-colors disabled:opacity-50">
+            
+            {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-sm font-medium">{error}</p>}
+            
+            <Button type="submit" disabled={loading} size="lg"
+              className="w-full bg-[#0A1628] text-[#C9A84C] font-semibold hover:bg-[#112240] disabled:opacity-50 mt-4">
               {loading ? 'Creating account...' : 'Create Account'}
-            </button>
+            </Button>
           </form>
           <p className="mt-6 text-center text-sm text-slate-500">Already have an account? <Link href="/login" className="text-[#C9A84C] font-medium">Sign in</Link></p>
         </div>
