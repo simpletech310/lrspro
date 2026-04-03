@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Barebones middleware to isolate the crash on Vercel
+  // src/middleware.ts - Barebones for isolation testing
   return NextResponse.next()
 }
 
