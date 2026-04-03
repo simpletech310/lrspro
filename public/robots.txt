@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /portal/
+Disallow: /dashboard/
+Sitemap: https://lrsservepros.com/sitemap.xml
