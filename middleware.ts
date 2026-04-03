@@ -35,33 +35,12 @@ export async function middleware(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     const pathname = request.nextUrl.pathname
 
-    if (pathname.startsWith('/portal')) {
-      if (!user) return NextResponse.redirect(new URL('/login?redirect=' + pathname, request.url))
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-        
-      if (!profile || (profile.role !== 'client' && profile.role !== 'admin'))
-        return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-
-    if (pathname.startsWith('/dashboard')) {
-      if (!user) return NextResponse.redirect(new URL('/login?redirect=' + pathname, request.url))
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-        
-      if (!profile || profile.role === 'client') 
-        return NextResponse.redirect(new URL('/portal/dashboard', request.url))
-        
-      if (pathname.startsWith('/dashboard/admin') && profile.role !== 'admin')
-        return NextResponse.redirect(new URL('/dashboard', request.url))
+    // Only redirect to login if no user is found for protected routes
+    if (!user && (pathname.startsWith('/portal') || pathname.startsWith('/dashboard'))) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(url)
     }
   } catch (error) {
     // If anything fails, we return the base response to avoid a 500 error

@@ -7,7 +7,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
   const { data: profile } = await supabase.from('profiles').select('full_name, role').eq('id', user.id).single()
-  if (!profile || profile.role === 'client') redirect('/portal/dashboard')
+  
+  if (!profile) {
+    redirect('/login')
+  }
+
+  if (profile.role === 'client') {
+    redirect('/portal/dashboard')
+  }
 
   const isAdmin = profile.role === 'admin'
 
