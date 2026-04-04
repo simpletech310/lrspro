@@ -3,9 +3,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { formatDate, formatDateTime, STATUS_LABELS, STATUS_COLORS, formatCurrency } from '@/lib/utils'
 import { CaseActions } from '@/components/dashboard/CaseActions'
-import { MapPin, FileText, CheckCircle2, AlertCircle } from 'lucide-react'
+import { AssignStaffSelect } from '@/components/dashboard/AssignStaffSelect'
 
-// Main Server Component
 export default async function StaffCaseDetail({ params }: { params: { id: string } }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -32,6 +31,7 @@ export default async function StaffCaseDetail({ params }: { params: { id: string
           </div>
           <p className="text-slate-500 text-sm">Service: {c.service?.name} | Opened: {formatDate(c.created_at)}</p>
         </div>
+        <Link href="/dashboard/cases" className="text-sm text-slate-500 hover:text-[#0A1628]">← Back to Cases</Link>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6 relative">
@@ -44,11 +44,13 @@ export default async function StaffCaseDetail({ params }: { params: { id: string
                 ['Subject Address', c.subject_address ? `${c.subject_address}, ${c.subject_city}, ${c.subject_state} ${c.subject_zip}` : ''],
                 ['Court Name', c.court_name],
                 ['Court Case #', c.court_case_number],
+                ['Plaintiff', c.plaintiff_name],
+                ['Defendant', c.defendant_name],
                 ['Instructions', c.special_instructions],
                 ['Deadline', c.deadline ? formatDate(c.deadline) : 'None'],
                 ['Client Note', c.documents_description]
               ].filter(([_, v]) => v).map(([k, v]) => (
-                <div key={k as string} className="sm:col-span-2">
+                <div key={k as string} className={['Instructions','Client Note','Subject Address'].includes(k as string) ? 'sm:col-span-2' : ''}>
                   <span className="block text-slate-500 mb-0.5">{k as string}</span>
                   <span className="font-medium text-[#0A1628] break-words">{v as string}</span>
                 </div>
@@ -56,12 +58,12 @@ export default async function StaffCaseDetail({ params }: { params: { id: string
             </div>
           </div>
 
-          <CaseActions 
-             caseId={c.id} 
-             status={c.status} 
-             checklist={c.checklist} 
-             attempts={c.attempts} 
-             documents={c.documents} 
+          <CaseActions
+             caseId={c.id}
+             status={c.status}
+             checklist={c.checklist}
+             attempts={c.attempts}
+             documents={c.documents}
              userRole={profile?.role as string}
              staffId={user.id}
           />
@@ -74,15 +76,27 @@ export default async function StaffCaseDetail({ params }: { params: { id: string
               <div>
                 <span className="block text-slate-400 mb-1">Client</span>
                 <span className="font-medium">{c.client?.full_name}</span>
-                <span className="block text-slate-500">{c.client?.company}</span>
+                {c.client?.company && <span className="block text-slate-500">{c.client.company}</span>}
+                {c.client?.email && <span className="block text-slate-500">{c.client.email}</span>}
+                {c.client?.phone && <span className="block text-slate-500">{c.client.phone}</span>}
               </div>
-              <div className="pt-2">
-                <span className="block text-slate-400 mb-1">Assigned Staff</span>
-                <span className="font-medium text-[#C9A84C]">{c.assigned_staff?.full_name || 'Unassigned'}</span>
+              <div className="pt-2 border-t border-white/5">
+                {profile?.role === 'admin' ? (
+                  <AssignStaffSelect caseId={c.id} currentStaffId={c.assigned_staff_id} />
+                ) : (
+                  <>
+                    <span className="block text-slate-400 mb-1">Assigned Staff</span>
+                    <span className="font-medium text-[#C9A84C]">{c.assigned_staff?.full_name || 'Unassigned'}</span>
+                  </>
+                )}
               </div>
-              <div className="pt-2">
+              <div className="pt-2 border-t border-white/5">
                 <span className="block text-slate-400 mb-1">Amount Paid</span>
                 <span className="font-medium text-emerald-400">{formatCurrency(c.amount_paid || 0)}</span>
+              </div>
+              <div className="pt-2 border-t border-white/5">
+                <span className="block text-slate-400 mb-1">Priority</span>
+                <span className="font-medium text-[#C9A84C] capitalize">{c.priority?.replace(/_/g, ' ')}</span>
               </div>
             </div>
           </div>

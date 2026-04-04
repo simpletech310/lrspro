@@ -1,26 +1,22 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { LogoutButton } from '@/components/LogoutButton'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
   const { data: profile } = await supabase.from('profiles').select('full_name, role').eq('id', user.id).single()
-  
-  if (!profile) {
-    redirect('/login')
-  }
 
-  if (profile.role === 'client') {
-    redirect('/portal/dashboard')
-  }
+  if (!profile) redirect('/login')
+  if (profile.role === 'client') redirect('/portal/dashboard')
 
   const isAdmin = profile.role === 'admin'
 
   return (
     <div className="min-h-screen bg-slate-100 flex">
-      <aside className="w-64 bg-[#0A1628] text-white flex-shrink-0 flex flex-col">
+      <aside className="w-64 bg-[#0A1628] text-white flex-shrink-0 flex flex-col hidden md:flex">
         <div className="p-6 border-b border-white/10">
           <Link href="/dashboard" className="flex items-center gap-3">
             <div className="w-8 h-8 bg-[#C9A84C] rounded-sm flex items-center justify-center">
@@ -45,12 +41,28 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </>
           )}
         </nav>
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-3">
           <div className="text-slate-400 text-xs">{profile.full_name}</div>
+          <LogoutButton />
         </div>
       </aside>
+      {/* Mobile header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A1628] text-white px-4 h-14 flex items-center justify-between">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="w-7 h-7 bg-[#C9A84C] rounded-sm flex items-center justify-center">
+            <span className="text-[#0A1628] font-bold text-xs">LRS</span>
+          </div>
+          <span className="text-sm font-semibold">Staff</span>
+        </Link>
+        <nav className="flex items-center gap-4 text-sm">
+          <Link href="/dashboard" className="text-slate-300 hover:text-white">Home</Link>
+          <Link href="/dashboard/cases" className="text-slate-300 hover:text-white">Cases</Link>
+          {isAdmin && <Link href="/dashboard/admin" className="text-slate-300 hover:text-white">Admin</Link>}
+          <LogoutButton className="text-slate-400 hover:text-white text-sm" />
+        </nav>
+      </div>
       <main className="flex-1 overflow-auto">
-        <div className="p-8">{children}</div>
+        <div className="p-8 md:p-8 pt-20 md:pt-8">{children}</div>
       </main>
     </div>
   )
