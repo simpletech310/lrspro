@@ -80,8 +80,14 @@ export default function SignupPage() {
               {form.formState.errors.password && <p className="text-red-500 text-xs mt-1 font-medium">{form.formState.errors.password.message}</p>}
             </div>
             
+            <p className="text-xs text-slate-500 leading-relaxed">
+              By creating an account, you agree to our{' '}
+              <Link href="/terms" className="text-[#C9A84C] hover:underline">Terms of Service</Link> and{' '}
+              <Link href="/privacy" className="text-[#C9A84C] hover:underline">Privacy Policy</Link>.
+            </p>
+
             {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-sm font-medium">{error}</p>}
-            
+
             <Button type="submit" disabled={loading} size="lg"
               className="w-full bg-[#0A1628] text-[#C9A84C] font-semibold hover:bg-[#112240] disabled:opacity-50 mt-4">
               {loading ? 'Creating account...' : 'Create Account'}

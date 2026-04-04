@@ -9,7 +9,7 @@ export function PostUpdateModal({ caseId, onClose }: { caseId: string; onClose: 
   const [error, setError] = useState('')
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [clientVisible, setClientVisible] = useState(true)
+  const [clientVisible, setClientVisible] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

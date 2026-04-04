@@ -39,6 +39,7 @@ export function UploadDocModal({ caseId, onClose }: { caseId: string; onClose: (
     accept: {
       'application/pdf': ['.pdf'],
       'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.webp'],
+      'video/*': ['.mp4', '.mov', '.avi', '.webm'],
       'application/msword': ['.doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },

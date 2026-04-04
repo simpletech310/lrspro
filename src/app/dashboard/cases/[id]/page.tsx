@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { formatDate, formatDateTime, STATUS_LABELS, STATUS_COLORS, formatCurrency } from '@/lib/utils'
 import { CaseActions } from '@/components/dashboard/CaseActions'
 import { AssignStaffSelect } from '@/components/dashboard/AssignStaffSelect'
+import { Phone, Navigation, AlertTriangle } from 'lucide-react'
 
 export default async function StaffCaseDetail({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -34,13 +35,46 @@ export default async function StaffCaseDetail({ params }: { params: { id: string
         <Link href="/dashboard/cases" className="text-sm text-slate-500 hover:text-[#0A1628]">← Back to Cases</Link>
       </div>
 
+      {/* Deadline warning */}
+      {c.deadline && new Date(c.deadline) < new Date() && !['complete','cancelled'].includes(c.status) && (
+        <div className="bg-red-50 border border-red-200 rounded-sm px-4 py-3 flex items-center gap-3">
+          <AlertTriangle size={18} className="text-red-600 flex-shrink-0" />
+          <span className="text-red-800 text-sm font-medium">OVERDUE — Deadline was {formatDate(c.deadline)}</span>
+        </div>
+      )}
+      {c.deadline && new Date(c.deadline) > new Date() && new Date(c.deadline).getTime() - Date.now() < 2 * 24 * 60 * 60 * 1000 && !['complete','cancelled'].includes(c.status) && (
+        <div className="bg-amber-50 border border-amber-200 rounded-sm px-4 py-3 flex items-center gap-3">
+          <AlertTriangle size={18} className="text-amber-600 flex-shrink-0" />
+          <span className="text-amber-800 text-sm font-medium">Deadline approaching — {formatDate(c.deadline)}</span>
+        </div>
+      )}
+
       <div className="grid lg:grid-cols-3 gap-6 relative">
         <div className="lg:col-span-2 space-y-6">
+          {/* Quick actions bar for field work */}
+          {(c.subject_phone || c.subject_address) && (
+            <div className="bg-white border border-slate-200 rounded-sm shadow-card p-4 flex flex-wrap gap-3">
+              {c.subject_phone && (
+                <a href={`tel:${c.subject_phone}`} className="inline-flex items-center gap-2 bg-[#0A1628] text-white px-4 py-2 rounded-sm text-sm font-semibold hover:bg-[#112240]">
+                  <Phone size={14} /> Call Subject: {c.subject_phone}
+                </a>
+              )}
+              {c.subject_address && (
+                <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${c.subject_address}, ${c.subject_city}, ${c.subject_state} ${c.subject_zip}`)}`}
+                  target="_blank" rel="noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#C9A84C] text-[#0A1628] px-4 py-2 rounded-sm text-sm font-semibold hover:bg-[#E8C96A]">
+                  <Navigation size={14} /> Get Directions
+                </a>
+              )}
+            </div>
+          )}
+
           <div className="bg-white border border-slate-200 rounded-sm shadow-card p-6">
             <h2 className="font-semibold text-[#0A1628] mb-4 pb-2 border-b border-slate-100">Case Details</h2>
             <div className="grid sm:grid-cols-2 gap-4 text-sm">
               {[
                 ['Subject Name', c.subject_name],
+                ['Subject Phone', c.subject_phone],
                 ['Subject Address', c.subject_address ? `${c.subject_address}, ${c.subject_city}, ${c.subject_state} ${c.subject_zip}` : ''],
                 ['Court Name', c.court_name],
                 ['Court Case #', c.court_case_number],

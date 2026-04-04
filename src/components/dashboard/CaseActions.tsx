@@ -67,12 +67,20 @@ export function CaseActions({ caseId, status, checklist, attempts, documents, us
                 </label>
               ))}
 
-              <div className="mt-8 pt-6 border-t border-slate-100 flex gap-4 flex-wrap">
-                <button onClick={() => handleUpdateStatus('in_progress')} className="bg-[#0A1628] text-white px-4 py-2 text-sm font-semibold rounded-sm hover:bg-[#112240]">Mark In Progress</button>
-                <button onClick={() => handleUpdateStatus('complete')} className="bg-emerald-600 text-white px-4 py-2 text-sm font-semibold rounded-sm hover:bg-emerald-700">Mark Complete</button>
-                <button onClick={() => setShowUpdateModal(true)} className="bg-white border border-slate-300 text-slate-700 px-4 py-2 text-sm font-semibold rounded-sm hover:bg-slate-50 flex items-center gap-2">
-                  <MessageSquare size={14} /> Post Update
-                </button>
+              <div className="mt-8 pt-6 border-t border-slate-100 space-y-3">
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Update Status</div>
+                <div className="flex gap-2 flex-wrap">
+                  <button onClick={() => handleUpdateStatus('in_progress')} className="bg-[#0A1628] text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-[#112240]">In Progress</button>
+                  <button onClick={() => handleUpdateStatus('served')} className="bg-green-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-green-700">Served</button>
+                  <button onClick={() => handleUpdateStatus('sub_served')} className="bg-teal-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-teal-700">Sub-Served</button>
+                  <button onClick={() => handleUpdateStatus('unable_to_serve')} className="bg-red-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-red-700">Unable to Serve</button>
+                  <button onClick={() => handleUpdateStatus('complete')} className="bg-emerald-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-emerald-700">Complete</button>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button onClick={() => setShowUpdateModal(true)} className="bg-white border border-slate-300 text-slate-700 px-4 py-2 text-sm font-semibold rounded-sm hover:bg-slate-50 flex items-center gap-2">
+                    <MessageSquare size={14} /> Post Update
+                  </button>
+                </div>
               </div>
             </div>
           )}
