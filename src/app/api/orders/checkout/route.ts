@@ -12,6 +12,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { service_slug, priority = 'standard', order_data, amount_override } = body
 
+    if (!service_slug) return NextResponse.json({ error: 'Missing service_slug' }, { status: 400 })
+
     const { data: service } = await supabase.from('services').select('*').eq('slug', service_slug).single()
     if (!service) return NextResponse.json({ error: 'Service not found' }, { status: 404 })
 
@@ -27,18 +29,24 @@ export async function POST(request: NextRequest) {
       lineItems = [{ price_data: { currency: 'usd', product_data: { name: `${service.name} — ${priority.replace('_',' ')}`, description: service.short_description }, unit_amount: unitAmount }, quantity: 1 }]
     }
 
+    // Determine base URL: prefer env var, fall back to request origin
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.replace(/\/[^/]*$/, '') || ''
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL !== 'http://localhost:3000'
+      ? process.env.NEXT_PUBLIC_APP_URL
+      : origin || 'https://lrspro.vercel.app'
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment', line_items: lineItems,
       customer_email: profile?.email || user.email,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/portal/new-order/confirmation?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/portal/new-order/review`,
+      success_url: `${baseUrl}/portal/new-order/confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/portal/new-order/review`,
       metadata: { user_id: user.id, service_slug, service_id: service.id, priority, order_data: JSON.stringify(order_data) },
       payment_intent_data: { metadata: { user_id: user.id, service_slug } }
     })
 
     return NextResponse.json({ url: session.url, session_id: session.id })
-  } catch (err) {
-    console.error('Checkout error:', err)
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
+  } catch (err: any) {
+    console.error('Checkout error:', err?.message || err)
+    return NextResponse.json({ error: err?.message || 'Failed to create checkout session' }, { status: 500 })
   }
 }
