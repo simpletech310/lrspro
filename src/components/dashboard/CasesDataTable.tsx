@@ -33,7 +33,14 @@ export function CasesDataTable({ data }: { data: any[] }) {
           </Button>
         )
       },
-      cell: ({ row }) => <span className="font-mono text-[#0A1628] font-medium">{row.getValue('case_number')}</span>
+      cell: ({ row }) => <span className="font-mono text-[#0A1628] font-medium">{row.getValue('case_number')}</span>,
+      filterFn: (row, _columnId, filterValue) => {
+        const search = filterValue.toLowerCase()
+        const caseNum = (row.getValue('case_number') as string || '').toLowerCase()
+        const client = (row.getValue('client') as string || '').toLowerCase()
+        const subject = (row.original.subject_name || '').toLowerCase()
+        return caseNum.includes(search) || client.includes(search) || subject.includes(search)
+      },
     },
     {
       accessorFn: row => row.service?.name,
@@ -95,18 +102,44 @@ export function CasesDataTable({ data }: { data: any[] }) {
     },
   })
 
+  const uniqueStatuses = Array.from(new Set(data.map(c => c.status))).sort()
+  const uniquePriorities = Array.from(new Set(data.map(c => c.priority))).sort()
+
   return (
     <div>
-      <div className="flex items-center py-4 mb-2">
-        <div className="relative w-full max-w-sm">
+      <div className="flex flex-wrap items-center gap-3 py-4 mb-2">
+        <div className="relative w-full max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
           <Input
-            placeholder="Filter by Case #..."
+            placeholder="Search case #, client, subject..."
             value={(table.getColumn('case_number')?.getFilterValue() as string) ?? ''}
             onChange={(event) => table.getColumn('case_number')?.setFilterValue(event.target.value)}
             className="pl-9 bg-white focus-visible:ring-[#C9A84C]"
           />
         </div>
+        <select
+          value={(table.getColumn('status')?.getFilterValue() as string) ?? ''}
+          onChange={(e) => table.getColumn('status')?.setFilterValue(e.target.value || undefined)}
+          className="h-10 border border-slate-200 rounded-sm px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#C9A84C]"
+        >
+          <option value="">All Statuses</option>
+          {uniqueStatuses.map(s => (
+            <option key={s} value={s}>{STATUS_LABELS[s as keyof typeof STATUS_LABELS] || s}</option>
+          ))}
+        </select>
+        <select
+          value={(table.getColumn('priority')?.getFilterValue() as string) ?? ''}
+          onChange={(e) => table.getColumn('priority')?.setFilterValue(e.target.value || undefined)}
+          className="h-10 border border-slate-200 rounded-sm px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#C9A84C]"
+        >
+          <option value="">All Priorities</option>
+          {uniquePriorities.map(p => (
+            <option key={p} value={p}>{PRIORITY_LABELS[p as keyof typeof PRIORITY_LABELS] || p}</option>
+          ))}
+        </select>
+        <span className="text-sm text-slate-400 ml-auto">
+          {table.getFilteredRowModel().rows.length} of {data.length} cases
+        </span>
       </div>
       <div className="bg-white border text-sm border-slate-200 rounded-sm shadow-card overflow-hidden">
         <table className="w-full">

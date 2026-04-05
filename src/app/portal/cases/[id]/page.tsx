@@ -58,6 +58,19 @@ export default async function ClientCaseDetail({ params }: { params: { id: strin
     ? getEstimatedCompletion(c.created_at, c.priority, c.service?.estimated_turnaround)
     : null
 
+  // Progress calculation
+  const PROGRESS_STAGES = ['received', 'assigned', 'in_progress', 'attempted', 'served', 'complete']
+  const isFinal = ['complete', 'cancelled', 'unable_to_serve'].includes(c.status)
+  const currentIdx = isFinal ? PROGRESS_STAGES.length - 1 : PROGRESS_STAGES.indexOf(c.status)
+  const progressPct = isFinal ? 100 : Math.max(5, Math.round(((currentIdx >= 0 ? currentIdx : 0) / (PROGRESS_STAGES.length - 1)) * 100))
+
+  const STAGE_LABELS = [
+    { key: 'received', label: 'Received' },
+    { key: 'in_progress', label: 'In Progress' },
+    { key: 'served', label: 'Served' },
+    { key: 'complete', label: 'Complete' },
+  ]
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center gap-4 mb-8">
@@ -71,6 +84,28 @@ export default async function ClientCaseDetail({ params }: { params: { id: strin
         <div className={`ml-auto px-4 py-1.5 rounded-full text-sm font-bold ${STATUS_COLORS[c.status as keyof typeof STATUS_COLORS]}`}>
           {STATUS_LABELS[c.status as keyof typeof STATUS_LABELS]}
         </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="bg-white border border-slate-200 rounded-sm shadow-card p-6">
+        <div className="flex items-center justify-between mb-3">
+          {STAGE_LABELS.map((stage, i) => {
+            const stageIdx = PROGRESS_STAGES.indexOf(stage.key)
+            const reached = currentIdx >= stageIdx
+            return (
+              <div key={stage.key} className={`text-xs font-semibold ${reached ? 'text-[#0A1628]' : 'text-slate-400'} ${i === 0 ? 'text-left' : i === STAGE_LABELS.length - 1 ? 'text-right' : 'text-center'}`}>
+                {stage.label}
+              </div>
+            )
+          })}
+        </div>
+        <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ${isFinal && c.status === 'complete' ? 'bg-emerald-500' : isFinal ? 'bg-red-400' : 'bg-[#C9A84C]'}`}
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+        <div className="mt-2 text-xs text-slate-500 text-right">{progressPct}% complete</div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">

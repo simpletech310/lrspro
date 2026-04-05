@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { formatDateTime } from '@/lib/utils'
 import { Mail, MailOpen, Phone } from 'lucide-react'
+import { InboxActions } from '@/components/dashboard/InboxActions'
 
 export default async function AdminInbox() {
   const supabase = createClient()
@@ -61,8 +62,9 @@ export default async function AdminInbox() {
                       <p className="text-sm text-slate-600 mt-2 whitespace-pre-wrap">{s.message}</p>
                     </div>
                   </div>
-                  <div className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
-                    {formatDateTime(s.created_at)}
+                  <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                    <span className="text-xs text-slate-400 whitespace-nowrap">{formatDateTime(s.created_at)}</span>
+                    <InboxActions id={s.id} isRead={s.is_read} />
                   </div>
                 </div>
               </div>

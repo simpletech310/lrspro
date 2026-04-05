@@ -17,19 +17,45 @@ export function CaseActions({ caseId, status, checklist, attempts, documents, us
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showUpdateModal, setShowUpdateModal] = useState(false)
 
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
   const toggleChecklist = async (itemId: string, currentStatus: boolean) => {
-    await fetch(`/api/cases/${caseId}/checklist`, {
+    setActionLoading(itemId)
+    const res = await fetch(`/api/cases/${caseId}/checklist`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ item_id: itemId, is_complete: !currentStatus })
     })
+    if (!res.ok) showToast('Failed to update checklist', 'error')
+    else showToast(currentStatus ? 'Item unchecked' : 'Item completed')
+    setActionLoading(null)
     router.refresh()
   }
 
+  const FINAL_STATUSES: CaseStatus[] = ['complete', 'unable_to_serve', 'cancelled']
+  const STATUS_CONFIRM: Partial<Record<CaseStatus, string>> = {
+    complete: 'Mark this case as complete? This signals to the client that all work is finished.',
+    unable_to_serve: 'Mark as unable to serve? This is a final status — the case will be closed.',
+    served: 'Confirm the subject has been personally served?',
+    sub_served: 'Confirm substituted service was completed?',
+  }
+
   const handleUpdateStatus = async (newStatus: CaseStatus) => {
-    await fetch(`/api/cases/${caseId}`, {
+    const confirmMsg = STATUS_CONFIRM[newStatus]
+    if (confirmMsg && !confirm(confirmMsg)) return
+    setActionLoading(newStatus)
+    const res = await fetch(`/api/cases/${caseId}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     })
+    if (!res.ok) showToast('Failed to update status', 'error')
+    else showToast(`Status updated to ${newStatus.replace(/_/g, ' ')}`)
+    setActionLoading(null)
     router.refresh()
   }
 
@@ -70,11 +96,18 @@ export function CaseActions({ caseId, status, checklist, attempts, documents, us
               <div className="mt-8 pt-6 border-t border-slate-100 space-y-3">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Update Status</div>
                 <div className="flex gap-2 flex-wrap">
-                  <button onClick={() => handleUpdateStatus('in_progress')} className="bg-[#0A1628] text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-[#112240]">In Progress</button>
-                  <button onClick={() => handleUpdateStatus('served')} className="bg-green-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-green-700">Served</button>
-                  <button onClick={() => handleUpdateStatus('sub_served')} className="bg-teal-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-teal-700">Sub-Served</button>
-                  <button onClick={() => handleUpdateStatus('unable_to_serve')} className="bg-red-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-red-700">Unable to Serve</button>
-                  <button onClick={() => handleUpdateStatus('complete')} className="bg-emerald-600 text-white px-3 py-2 text-sm font-semibold rounded-sm hover:bg-emerald-700">Complete</button>
+                  {([
+                    { s: 'in_progress' as CaseStatus, label: 'In Progress', cls: 'bg-[#0A1628] hover:bg-[#112240] text-white' },
+                    { s: 'served' as CaseStatus, label: 'Served', cls: 'bg-green-600 hover:bg-green-700 text-white' },
+                    { s: 'sub_served' as CaseStatus, label: 'Sub-Served', cls: 'bg-teal-600 hover:bg-teal-700 text-white' },
+                    { s: 'unable_to_serve' as CaseStatus, label: 'Unable to Serve', cls: 'bg-red-600 hover:bg-red-700 text-white' },
+                    { s: 'complete' as CaseStatus, label: 'Complete', cls: 'bg-emerald-600 hover:bg-emerald-700 text-white' },
+                  ]).map(btn => (
+                    <button key={btn.s} onClick={() => handleUpdateStatus(btn.s)} disabled={actionLoading !== null || status === btn.s}
+                      className={`px-3 py-2 text-sm font-semibold rounded-sm disabled:opacity-50 ${btn.cls}`}>
+                      {actionLoading === btn.s ? 'Saving...' : btn.label}
+                    </button>
+                  ))}
                 </div>
                 <div className="flex gap-2 pt-2">
                   <button onClick={() => setShowUpdateModal(true)} className="bg-white border border-slate-300 text-slate-700 px-4 py-2 text-sm font-semibold rounded-sm hover:bg-slate-50 flex items-center gap-2">
@@ -143,6 +176,14 @@ export function CaseActions({ caseId, status, checklist, attempts, documents, us
       {showAttemptModal && <LogAttemptModal caseId={caseId} onClose={() => setShowAttemptModal(false)} />}
       {showUploadModal && <UploadDocModal caseId={caseId} onClose={() => setShowUploadModal(false)} />}
       {showUpdateModal && <PostUpdateModal caseId={caseId} onClose={() => setShowUpdateModal(false)} />}
+
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-sm shadow-elevated text-sm font-medium animate-in slide-in-from-bottom-2 ${
+          toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-[#0A1628] text-white'
+        }`}>
+          {toast.message}
+        </div>
+      )}
     </>
   )
 }
