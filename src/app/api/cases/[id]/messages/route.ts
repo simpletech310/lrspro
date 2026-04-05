@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   let query = supabase
     .from('case_messages')
-    .select('*, sender:profiles!sender_id(full_name, role)')
+    .select('*')
     .eq('case_id', params.id)
     .order('created_at', { ascending: true })
 
@@ -42,7 +42,25 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 })
   }
 
-  return NextResponse.json({ data: messages })
+  // Enrich with sender info
+  const senderIds = Array.from(new Set((messages || []).map(m => m.sender_id)))
+  let senderMap: Record<string, { full_name: string; role: string }> = {}
+  if (senderIds.length > 0) {
+    const { data: senders } = await supabase
+      .from('profiles')
+      .select('id, full_name, role')
+      .in('id', senderIds)
+    if (senders) {
+      senderMap = Object.fromEntries(senders.map(s => [s.id, { full_name: s.full_name, role: s.role }]))
+    }
+  }
+
+  const enriched = (messages || []).map(m => ({
+    ...m,
+    sender: senderMap[m.sender_id] || { full_name: 'Unknown', role: 'unknown' },
+  }))
+
+  return NextResponse.json({ data: enriched })
 }
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -60,7 +78,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Too many messages. Please wait a moment.' }, { status: 429 })
   }
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const { data: profile } = await supabase.from('profiles').select('role, full_name').eq('id', user.id).single()
   if (!profile) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // Verify access
@@ -96,7 +114,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       content: content.trim(),
       is_internal: finalIsInternal,
     })
-    .select('*, sender:profiles!sender_id(full_name, role)')
+    .select()
     .single()
 
   if (error) {
@@ -104,5 +122,11 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
   }
 
-  return NextResponse.json({ data: message })
+  // Return with sender info attached
+  const enriched = {
+    ...message,
+    sender: { full_name: profile.full_name, role: profile.role },
+  }
+
+  return NextResponse.json({ data: enriched })
 }

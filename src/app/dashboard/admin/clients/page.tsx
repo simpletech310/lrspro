@@ -48,12 +48,12 @@ export default async function ClientsManagement() {
             {clientsWithStats.map(c => (
               <tr key={c.id} className="hover:bg-slate-50">
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
+                  <Link href={`/dashboard/admin/clients/${c.id}`} className="flex items-center gap-3 group">
                     <div className="w-8 h-8 bg-[#C9A84C] rounded-full flex items-center justify-center text-[#0A1628] font-semibold text-xs">
                       {c.full_name?.charAt(0) || '?'}
                     </div>
-                    <span className="font-medium text-sm text-[#0A1628]">{c.full_name}</span>
-                  </div>
+                    <span className="font-medium text-sm text-[#0A1628] group-hover:text-[#C9A84C] transition-colors">{c.full_name}</span>
+                  </Link>
                 </td>
                 <td className="px-4 py-3 text-sm text-slate-600">{c.email}</td>
                 <td className="px-4 py-3 text-sm text-slate-600">{c.company || '—'}</td>
