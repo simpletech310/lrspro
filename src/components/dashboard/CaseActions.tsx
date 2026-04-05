@@ -7,12 +7,13 @@ import { formatDateTime } from '@/lib/utils'
 import { LogAttemptModal } from './LogAttemptModal'
 import { UploadDocModal } from './UploadDocModal'
 import { PostUpdateModal } from './PostUpdateModal'
+import { CaseMessages } from './CaseMessages'
 
 export function CaseActions({ caseId, status, checklist, attempts, documents, userRole, staffId }:
   { caseId: string, status: CaseStatus, checklist: CaseChecklistItem[], attempts: CaseAttempt[], documents: CaseDocument[], userRole: string, staffId: string }
 ) {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'checklist'|'attempts'|'documents'>('checklist')
+  const [activeTab, setActiveTab] = useState<'checklist'|'attempts'|'documents'|'messages'>('checklist')
   const [showAttemptModal, setShowAttemptModal] = useState(false)
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showUpdateModal, setShowUpdateModal] = useState(false)
@@ -66,7 +67,8 @@ export function CaseActions({ caseId, status, checklist, attempts, documents, us
           {[
             { id: 'checklist', label: 'Action Checklist', icon: CheckCircle2 },
             { id: 'attempts', label: 'Service Attempts', icon: MapPin },
-            { id: 'documents', label: 'Documents', icon: FileText }
+            { id: 'documents', label: 'Documents', icon: FileText },
+            { id: 'messages', label: 'Messages', icon: MessageSquare }
           ].map(t => {
             const Icon = t.icon
             const isActive = activeTab === t.id
@@ -144,6 +146,10 @@ export function CaseActions({ caseId, status, checklist, attempts, documents, us
             </div>
           )}
 
+          {activeTab === 'messages' && (
+            <CaseMessages caseId={caseId} />
+          )}
+
           {activeTab === 'documents' && (
             <div>
               <div className="mb-6 flex justify-between items-center">
@@ -163,7 +169,7 @@ export function CaseActions({ caseId, status, checklist, attempts, documents, us
                           <div className="text-xs text-slate-500">Type: {d.doc_type.replace(/_/g,' ')} • {formatDateTime(d.created_at)}</div>
                         </div>
                       </div>
-                      <a href={d.storage_url} target="_blank" rel="noreferrer" className="text-[#C9A84C] text-sm font-medium hover:underline">View</a>
+                      {d.storage_url?.startsWith('https://') && <a href={d.storage_url} target="_blank" rel="noreferrer" className="text-[#C9A84C] text-sm font-medium hover:underline">View</a>}
                     </div>
                   ))}
                 </div>

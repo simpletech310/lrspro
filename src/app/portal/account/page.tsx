@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
-import { User, Save, CheckCircle2 } from 'lucide-react'
+import { User, Save, CheckCircle2, Lock } from 'lucide-react'
 
 export default function AccountPage() {
   const router = useRouter()
@@ -10,6 +10,10 @@ export default function AccountPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [pwForm, setPwForm] = useState({ newPassword: '', confirmPassword: '' })
+  const [pwSaving, setPwSaving] = useState(false)
+  const [pwSaved, setPwSaved] = useState(false)
+  const [pwError, setPwError] = useState('')
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -111,6 +115,49 @@ export default function AccountPage() {
             <Save size={14} /> {saving ? 'Saving...' : 'Save Changes'}
           </button>
           {saved && <span className="text-emerald-600 text-sm flex items-center gap-1"><CheckCircle2 size={14} /> Saved</span>}
+        </div>
+      </form>
+      <form onSubmit={async (e) => {
+        e.preventDefault()
+        setPwError('')
+        setPwSaved(false)
+        if (pwForm.newPassword.length < 8) { setPwError('Password must be at least 8 characters'); return }
+        if (pwForm.newPassword !== pwForm.confirmPassword) { setPwError('Passwords do not match'); return }
+        setPwSaving(true)
+        try {
+          const { error: err } = await supabase.auth.updateUser({ password: pwForm.newPassword })
+          if (err) throw err
+          setPwSaved(true)
+          setPwForm({ newPassword: '', confirmPassword: '' })
+          setTimeout(() => setPwSaved(false), 3000)
+        } catch (err: any) {
+          setPwError(err.message)
+        } finally {
+          setPwSaving(false)
+        }
+      }} className="bg-white border border-slate-200 rounded-sm shadow-card p-6 space-y-5 mt-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+          <Lock size={20} className="text-[#C9A84C]" />
+          <h2 className="font-semibold text-[#0A1628]">Change Password</h2>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+          <input type="password" value={pwForm.newPassword} onChange={e => setPwForm(f => ({ ...f, newPassword: e.target.value }))}
+            placeholder="Minimum 8 characters"
+            className="w-full border border-slate-300 rounded-sm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
+          <input type="password" value={pwForm.confirmPassword} onChange={e => setPwForm(f => ({ ...f, confirmPassword: e.target.value }))}
+            className="w-full border border-slate-300 rounded-sm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent" />
+        </div>
+        {pwError && <p className="text-red-600 text-sm">{pwError}</p>}
+        <div className="flex items-center gap-4 pt-2">
+          <button type="submit" disabled={pwSaving}
+            className="bg-[#0A1628] text-white px-6 py-2 text-sm font-semibold rounded-sm hover:bg-[#112240] disabled:opacity-50 flex items-center gap-2">
+            <Lock size={14} /> {pwSaving ? 'Updating...' : 'Update Password'}
+          </button>
+          {pwSaved && <span className="text-emerald-600 text-sm flex items-center gap-1"><CheckCircle2 size={14} /> Password updated</span>}
         </div>
       </form>
     </div>

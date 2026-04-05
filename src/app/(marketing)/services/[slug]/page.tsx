@@ -20,6 +20,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: page.metaTitle,
     description: page.metaDescription,
+    openGraph: {
+      title: page.metaTitle,
+      description: page.metaDescription,
+      images: [{ url: '/og/og-services.png', width: 1792, height: 1024 }],
+    },
   }
 }
 
@@ -53,9 +58,9 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
         {/* Hero */}
         <section className="bg-[#0A1628] relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[#0A1628] via-[#112240] to-[#0A1628]" />
-          <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 lg:py-32">
             <div className="max-w-3xl">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-5 sm:mb-6">
                 <span className="bg-[#C9A84C]/20 text-[#C9A84C] text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
                   {service.name}
                 </span>
@@ -63,22 +68,22 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
                   From {formatCurrency(service.base_price)}
                 </span>
               </div>
-              <h1 className="font-display text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+              <h1 className="font-display text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6">
                 {page.headline}
               </h1>
-              <p className="text-slate-300 text-lg leading-relaxed mb-10 max-w-2xl">
+              <p className="text-slate-300 text-base sm:text-lg leading-relaxed mb-8 sm:mb-10 max-w-2xl">
                 {page.tagline}
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link
                   href="/portal/new-order"
-                  className="inline-flex items-center gap-2 bg-[#C9A84C] text-[#0A1628] px-8 py-4 rounded-sm font-semibold text-lg hover:bg-[#E8C96A] transition-colors"
+                  className="inline-flex items-center justify-center gap-2 bg-[#C9A84C] text-[#0A1628] px-6 sm:px-8 py-3.5 sm:py-4 rounded-sm font-semibold text-base sm:text-lg hover:bg-[#E8C96A] transition-colors"
                 >
                   Order Now <ArrowRight size={20} />
                 </Link>
                 <a
                   href={`tel:${process.env.NEXT_PUBLIC_COMPANY_PHONE}`}
-                  className="inline-flex items-center gap-2 border-2 border-white/20 text-white px-8 py-4 rounded-sm font-semibold text-lg hover:border-white/40 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-sm font-semibold text-base sm:text-lg hover:border-white/40 transition-colors"
                 >
                   <Phone size={20} /> Call Us
                 </a>
@@ -88,18 +93,18 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
         </section>
 
         {/* Pricing */}
-        <section className="bg-[#F8F5EE] py-20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
+        <section className="bg-[#F8F5EE] py-14 sm:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-10 sm:mb-12">
               <span className="text-[#C9A84C] text-sm font-medium tracking-widest uppercase">Pricing</span>
-              <h2 className="font-display text-[#0A1628] text-3xl font-bold mt-2">Transparent, Flat-Rate Pricing</h2>
-              <p className="text-slate-500 mt-3 max-w-lg mx-auto">No hidden fees. No hourly billing. You know the exact cost before you order.</p>
+              <h2 className="font-display text-[#0A1628] text-2xl sm:text-3xl font-bold mt-2">Transparent, Flat-Rate Pricing</h2>
+              <p className="text-slate-500 mt-3 max-w-lg mx-auto text-sm sm:text-base">No hidden fees. No hourly billing. You know the exact cost before you order.</p>
             </div>
-            <div className={`grid gap-6 max-w-4xl mx-auto ${pricingTiers.length === 3 ? 'md:grid-cols-3' : pricingTiers.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1 max-w-md'}`}>
+            <div className={`grid gap-4 sm:gap-6 max-w-4xl mx-auto ${pricingTiers.length === 3 ? 'sm:grid-cols-3' : pricingTiers.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-1 max-w-md'}`}>
               {pricingTiers.map((tier) => (
                 <div
                   key={tier.name}
-                  className={`rounded-sm p-8 text-center ${
+                  className={`rounded-sm p-6 sm:p-8 text-center ${
                     tier.highlight
                       ? 'bg-[#0A1628] text-white ring-2 ring-[#C9A84C] shadow-elevated relative'
                       : 'bg-white border border-slate-200 shadow-card'
@@ -113,7 +118,7 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
                   <h3 className={`font-semibold text-lg mb-2 ${tier.highlight ? 'text-white' : 'text-[#0A1628]'}`}>
                     {tier.name}
                   </h3>
-                  <div className={`font-display text-4xl font-bold mb-3 ${tier.highlight ? 'text-[#C9A84C]' : 'text-[#0A1628]'}`}>
+                  <div className={`font-display text-3xl sm:text-4xl font-bold mb-3 ${tier.highlight ? 'text-[#C9A84C]' : 'text-[#0A1628]'}`}>
                     {formatCurrency(tier.price)}
                   </div>
                   <p className={`text-sm mb-6 ${tier.highlight ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -136,21 +141,21 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
         </section>
 
         {/* Features */}
-        <section className="bg-white py-20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
+        <section className="bg-white py-14 sm:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-10 sm:mb-12">
               <span className="text-[#C9A84C] text-sm font-medium tracking-widest uppercase">Why Choose Us</span>
-              <h2 className="font-display text-[#0A1628] text-3xl font-bold mt-2">What Sets Us Apart</h2>
+              <h2 className="font-display text-[#0A1628] text-2xl sm:text-3xl font-bold mt-2">What Sets Us Apart</h2>
             </div>
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
               {page.features.map((feature, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="w-10 h-10 bg-[#0A1628] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <Check size={18} className="text-[#C9A84C]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#0A1628] text-lg mb-2">{feature.title}</h3>
-                    <p className="text-slate-500 leading-relaxed">{feature.description}</p>
+                    <h3 className="font-semibold text-[#0A1628] text-base sm:text-lg mb-1.5 sm:mb-2">{feature.title}</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed">{feature.description}</p>
                   </div>
                 </div>
               ))}
@@ -158,25 +163,25 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
           </div>
         </section>
 
-        {/* What's Included (from checklist) */}
-        <section className="bg-[#F8F5EE] py-20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-12 items-start">
+        {/* What's Included */}
+        <section className="bg-[#F8F5EE] py-14 sm:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="grid md:grid-cols-2 gap-8 sm:gap-12 items-start">
               <div>
                 <span className="text-[#C9A84C] text-sm font-medium tracking-widest uppercase">Full Service</span>
-                <h2 className="font-display text-[#0A1628] text-3xl font-bold mt-2 mb-4">What&apos;s Included</h2>
-                <p className="text-slate-500 leading-relaxed mb-2">
+                <h2 className="font-display text-[#0A1628] text-2xl sm:text-3xl font-bold mt-2 mb-4">What&apos;s Included</h2>
+                <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-2">
                   {service.long_description}
                 </p>
               </div>
-              <div className="bg-white border border-slate-200 rounded-sm shadow-card p-8">
-                <ul className="space-y-4">
+              <div className="bg-white border border-slate-200 rounded-sm shadow-card p-5 sm:p-8">
+                <ul className="space-y-3 sm:space-y-4">
                   {checklist.map((item: any, i: number) => (
                     <li key={i} className="flex items-start gap-3">
                       <div className="w-6 h-6 bg-[#C9A84C]/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                         <Check size={14} className="text-[#C9A84C]" />
                       </div>
-                      <span className="text-slate-700">{item.label}</span>
+                      <span className="text-slate-700 text-sm sm:text-base">{item.label}</span>
                     </li>
                   ))}
                 </ul>
@@ -186,40 +191,40 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
         </section>
 
         {/* Trust indicators */}
-        <section className="bg-white py-16">
-          <div className="max-w-4xl mx-auto px-6">
-            <div className="grid grid-cols-3 gap-8 text-center">
+        <section className="bg-white py-12 sm:py-16">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-3 gap-4 sm:gap-8 text-center">
               <div>
-                <div className="w-12 h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Shield size={22} className="text-[#0A1628]" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                  <Shield size={20} className="text-[#0A1628]" />
                 </div>
-                <div className="font-semibold text-[#0A1628] text-sm">Licensed & Bonded</div>
-                <p className="text-slate-500 text-xs mt-1">California registered</p>
+                <div className="font-semibold text-[#0A1628] text-xs sm:text-sm">Licensed & Bonded</div>
+                <p className="text-slate-500 text-[11px] sm:text-xs mt-1">California registered</p>
               </div>
               <div>
-                <div className="w-12 h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Clock size={22} className="text-[#0A1628]" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                  <Clock size={20} className="text-[#0A1628]" />
                 </div>
-                <div className="font-semibold text-[#0A1628] text-sm">Rush Available</div>
-                <p className="text-slate-500 text-xs mt-1">Same-day options</p>
+                <div className="font-semibold text-[#0A1628] text-xs sm:text-sm">Rush Available</div>
+                <p className="text-slate-500 text-[11px] sm:text-xs mt-1">Same-day options</p>
               </div>
               <div>
-                <div className="w-12 h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Check size={22} className="text-[#0A1628]" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                  <Check size={20} className="text-[#0A1628]" />
                 </div>
-                <div className="font-semibold text-[#0A1628] text-sm">Documented</div>
-                <p className="text-slate-500 text-xs mt-1">Court-ready records</p>
+                <div className="font-semibold text-[#0A1628] text-xs sm:text-sm">Documented</div>
+                <p className="text-slate-500 text-[11px] sm:text-xs mt-1">Court-ready records</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="bg-[#F8F5EE] py-20">
-          <div className="max-w-3xl mx-auto px-6">
-            <div className="text-center mb-12">
+        <section className="bg-[#F8F5EE] py-14 sm:py-20">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-10 sm:mb-12">
               <span className="text-[#C9A84C] text-sm font-medium tracking-widest uppercase">FAQ</span>
-              <h2 className="font-display text-[#0A1628] text-3xl font-bold mt-2">Common Questions</h2>
+              <h2 className="font-display text-[#0A1628] text-2xl sm:text-3xl font-bold mt-2">Common Questions</h2>
             </div>
             <FAQ items={page.faqs} />
           </div>

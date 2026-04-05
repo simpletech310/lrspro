@@ -20,8 +20,8 @@ export default function ConfirmationPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    sessionStorage.removeItem('lrs_selected_service')
-    sessionStorage.removeItem('lrs_order_data')
+    localStorage.removeItem('lrs_selected_service')
+    localStorage.removeItem('lrs_order_data')
 
     if (sessionId) {
       fetch(`/api/orders/session?session_id=${sessionId}`)

@@ -13,7 +13,7 @@ export function ServiceSelector({ services }: { services: Service[] }) {
 
   const handleContinue = () => {
     if (!selected) return
-    sessionStorage.setItem('lrs_selected_service', selected)
+    localStorage.setItem('lrs_selected_service', selected)
     router.push('/portal/new-order/details')
   }
 

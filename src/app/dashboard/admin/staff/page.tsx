@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { formatDate } from '@/lib/utils'
 import { Users, CheckCircle2, XCircle } from 'lucide-react'
+import { RoleEditor } from '@/components/dashboard/RoleEditor'
 
 export default async function StaffManagement() {
   const supabase = createClient()
@@ -60,9 +61,7 @@ export default async function StaffManagement() {
                 <td className="px-4 py-3 text-sm text-slate-600">{s.email}</td>
                 <td className="px-4 py-3 text-sm text-slate-600">{s.phone || '—'}</td>
                 <td className="px-4 py-3">
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${s.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
-                    {s.role}
-                  </span>
+                  <RoleEditor staffId={s.id} currentRole={s.role} isSelf={s.id === user.id} />
                 </td>
                 <td className="px-4 py-3 text-sm font-medium text-[#0A1628]">{s.activeCases}</td>
                 <td className="px-4 py-3 text-sm text-emerald-600">{s.completedCases}</td>
@@ -86,7 +85,7 @@ export default async function StaffManagement() {
       <div className="bg-slate-50 border border-slate-200 rounded-sm p-6">
         <h3 className="font-semibold text-[#0A1628] mb-2">Adding New Staff</h3>
         <p className="text-slate-600 text-sm">
-          To add new staff members, have them sign up at the registration page. Then update their role to &quot;staff&quot; or &quot;admin&quot; in the Supabase dashboard under Authentication → Users, or update the <code className="bg-white px-1.5 py-0.5 rounded text-xs border border-slate-200">profiles</code> table directly.
+          To add new staff members, have them sign up at the registration page. Then change their role using the dropdown in the table above.
         </p>
       </div>
     </div>

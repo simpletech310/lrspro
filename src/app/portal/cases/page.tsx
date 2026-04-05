@@ -2,12 +2,13 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { formatDate, STATUS_LABELS, STATUS_COLORS, PRIORITY_LABELS } from '@/lib/utils'
+import { ReorderButton } from '@/components/portal/ReorderButton'
 
 export default async function CasesPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  const { data: cases } = await supabase.from('cases').select('*, service:services(name)').eq('client_id', user.id).order('created_at', { ascending: false })
+  const { data: cases } = await supabase.from('cases').select('*, service:services(id, name)').eq('client_id', user.id).order('created_at', { ascending: false })
 
   return (
     <div>
@@ -34,7 +35,12 @@ export default async function CasesPage() {
                   <td className="px-4 py-3 text-sm text-slate-500 capitalize">{PRIORITY_LABELS[c.priority as keyof typeof PRIORITY_LABELS]}</td>
                   <td className="px-4 py-3 text-sm text-slate-500">{c.subject_name || '—'}</td>
                   <td className="px-4 py-3 text-sm text-slate-400">{formatDate(c.created_at)}</td>
-                  <td className="px-4 py-3"><Link href={`/portal/cases/${c.id}`} className="text-[#C9A84C] text-sm font-medium hover:underline">View →</Link></td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <Link href={`/portal/cases/${c.id}`} className="text-[#C9A84C] text-sm font-medium hover:underline">View →</Link>
+                      {c.status === 'complete' && c.service?.id && <ReorderButton serviceId={c.service.id} />}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -19,7 +19,7 @@ export default function OrderDetailsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const serviceId = sessionStorage.getItem('lrs_selected_service')
+    const serviceId = localStorage.getItem('lrs_selected_service')
     if (!serviceId) { router.push('/portal/new-order'); return }
     const fetchService = async () => {
       const { data } = await supabase.from('services').select('*').eq('id', serviceId).single()
@@ -51,7 +51,7 @@ export default function OrderDetailsPage() {
         else defaults[f.name] = ''
       })
       // Load saved if went back from review
-      const saved = sessionStorage.getItem('lrs_order_data')
+      const saved = localStorage.getItem('lrs_order_data')
       if (saved) {
         try { Object.assign(defaults, JSON.parse(saved)) } catch {}
       }
@@ -65,7 +65,7 @@ export default function OrderDetailsPage() {
   }, [service, form])
 
   const onSubmit = (values: Record<string, any>) => {
-    sessionStorage.setItem('lrs_order_data', JSON.stringify(values))
+    localStorage.setItem('lrs_order_data', JSON.stringify(values))
     router.push('/portal/new-order/review')
   }
 

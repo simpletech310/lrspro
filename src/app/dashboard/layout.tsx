@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { LogoutButton } from '@/components/LogoutButton'
+import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
@@ -28,19 +29,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </div>
           </Link>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {[{href:'/dashboard',label:'Dashboard'},{href:'/dashboard/cases',label:'All Cases'}].map(l=>(
-            <Link key={l.href} href={l.href} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-slate-300 hover:text-white hover:bg-white/10 text-sm transition-colors">{l.label}</Link>
-          ))}
-          {isAdmin && (
-            <>
-              <div className="pt-4 pb-1 px-3 text-xs text-slate-500 uppercase tracking-wider">Admin</div>
-              {[{href:'/dashboard/admin',label:'Overview'},{href:'/dashboard/admin/inbox',label:'Inbox'},{href:'/dashboard/admin/staff',label:'Staff'},{href:'/dashboard/admin/clients',label:'Clients'}].map(l=>(
-                <Link key={l.href} href={l.href} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-slate-300 hover:text-white hover:bg-white/10 text-sm transition-colors">{l.label}</Link>
-              ))}
-            </>
-          )}
-        </nav>
+        <DashboardSidebar isAdmin={isAdmin} />
         <div className="p-4 border-t border-white/10 space-y-3">
           <div className="text-slate-400 text-xs">{profile.full_name}</div>
           <LogoutButton />

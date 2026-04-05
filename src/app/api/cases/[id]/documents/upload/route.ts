@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { isValidUUID } from '@/lib/security'
+import { scanBuffer } from '@/lib/scanner'
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+  if (!isValidUUID(params.id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -16,18 +20,27 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
 
+  // Scan file for viruses with ClamAV
+  const buffer = Buffer.from(await file.arrayBuffer())
+  const scanResult = await scanBuffer(buffer, file.name)
+  if (!scanResult.isClean) {
+    console.warn(`Malware detected in upload from user ${user.id}: ${scanResult.viruses.join(', ')}`)
+    return NextResponse.json({ error: 'File rejected: malware detected' }, { status: 400 })
+  }
+
   // Generate unique file path
-  const ext = file.name.split('.').pop() || 'pdf'
   const storagePath = `cases/${params.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
 
   // Upload to Supabase Storage
   const serviceClient = createServiceClient()
-  const buffer = Buffer.from(await file.arrayBuffer())
   const { data: uploadData, error: uploadError } = await serviceClient.storage
     .from('case-documents')
     .upload(storagePath, buffer, { contentType: file.type, upsert: false })
 
-  if (uploadError) return NextResponse.json({ error: 'Upload failed: ' + uploadError.message }, { status: 500 })
+  if (uploadError) {
+    console.error('Upload error:', uploadError)
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+  }
 
   // Get public URL
   const { data: urlData } = serviceClient.storage.from('case-documents').getPublicUrl(storagePath)
@@ -46,7 +59,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     is_client_visible: clientVisible || (profile?.role === 'client'),
   }).select().single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('Document record error:', error)
+    return NextResponse.json({ error: 'Failed to save document record' }, { status: 500 })
+  }
 
   // Create case update
   await supabase.from('case_updates').insert({

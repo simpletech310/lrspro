@@ -15,8 +15,8 @@ export default function ReviewPage() {
   const [initLoading, setInitLoading] = useState(true)
 
   useEffect(() => {
-    const serviceId = sessionStorage.getItem('lrs_selected_service')
-    const savedData = sessionStorage.getItem('lrs_order_data')
+    const serviceId = localStorage.getItem('lrs_selected_service')
+    const savedData = localStorage.getItem('lrs_order_data')
     if (!serviceId || !savedData) { router.push('/portal/new-order'); return }
     setOrderData(JSON.parse(savedData))
 

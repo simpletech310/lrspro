@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { formatDate, formatDateTime, STATUS_LABELS, STATUS_COLORS } from '@/lib/utils'
 import { ArrowLeft, Download, Clock, FileText, CheckCircle2, MapPin } from 'lucide-react'
+import { ClientCaseMessages } from '@/components/portal/ClientCaseMessages'
+import { ReorderButton } from '@/components/portal/ReorderButton'
 
 function getEstimatedCompletion(createdAt: string, priority: string, turnaround?: string): string | null {
   const created = new Date(createdAt)
@@ -81,8 +83,11 @@ export default async function ClientCaseDetail({ params }: { params: { id: strin
           <h1 className="font-display text-2xl font-bold text-[#0A1628]">Case {c.case_number}</h1>
           <p className="text-slate-500 text-sm">Opened {formatDate(c.created_at)}</p>
         </div>
-        <div className={`ml-auto px-4 py-1.5 rounded-full text-sm font-bold ${STATUS_COLORS[c.status as keyof typeof STATUS_COLORS]}`}>
-          {STATUS_LABELS[c.status as keyof typeof STATUS_LABELS]}
+        <div className="ml-auto flex items-center gap-3">
+          {c.status === 'complete' && c.service?.id && <ReorderButton serviceId={c.service.id} />}
+          <div className={`px-4 py-1.5 rounded-full text-sm font-bold ${STATUS_COLORS[c.status as keyof typeof STATUS_COLORS]}`}>
+            {STATUS_LABELS[c.status as keyof typeof STATUS_LABELS]}
+          </div>
         </div>
       </div>
 
@@ -133,6 +138,8 @@ export default async function ClientCaseDetail({ params }: { params: { id: strin
               )}
             </div>
           </div>
+
+          <ClientCaseMessages caseId={c.id} currentUserId={user.id} />
         </div>
 
         <div className="space-y-6">
@@ -184,7 +191,7 @@ export default async function ClientCaseDetail({ params }: { params: { id: strin
                       <div className="font-medium text-[#0A1628] text-sm">{d.file_name}</div>
                       <div className="text-xs text-slate-500 capitalize">{d.doc_type.replace(/_/g, ' ')}</div>
                     </div>
-                    {d.storage_url && (
+                    {d.storage_url && d.storage_url.startsWith('https://') && (
                       <a href={d.storage_url} target="_blank" rel="noreferrer" className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-600 group-hover:bg-[#C9A84C] group-hover:text-[#0A1628] transition-colors">
                         <Download size={14} />
                       </a>
