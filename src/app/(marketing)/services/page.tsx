@@ -14,7 +14,9 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ServicesPage() {
+export const revalidate = 3600
+
+export default async function ServicesPage() {
   return (
     <>
       <Navbar />
@@ -30,6 +32,7 @@ export default function ServicesPage() {
             <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">From the moment papers need to be served to the day your filings hit the clerk&rsquo;s desk — we handle it all with licensed professionals, GPS-documented proof, and court-ready deliverables.</p>
           </div>
         </div>
+
         <ServicesStrip />
         <div className="bg-white py-16 sm:py-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
@@ -50,6 +53,7 @@ export default function ServicesPage() {
             </div>
           </div>
         </div>
+
         <CTABanner />
       </main>
       <Footer />

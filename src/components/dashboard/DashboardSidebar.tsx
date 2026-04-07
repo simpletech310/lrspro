@@ -40,6 +40,9 @@ export function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
     { href: '/dashboard/admin/inbox', label: 'Inbox' },
     { href: '/dashboard/admin/staff', label: 'Staff' },
     { href: '/dashboard/admin/clients', label: 'Clients' },
+    { href: '/dashboard/admin/services', label: 'Services' },
+    { href: '/dashboard/admin/content', label: 'Site Content' },
+    { href: '/dashboard/admin/images', label: 'Images' },
   ]
 
   const renderLink = (l: { href: string; label: string }) => {

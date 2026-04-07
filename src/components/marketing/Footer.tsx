@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Footer() {
   const year = new Date().getFullYear()
@@ -7,9 +8,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12">
         <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 bg-[#C9A84C] rounded-sm flex items-center justify-center flex-shrink-0">
-              <span className="text-[#0A1628] font-bold text-sm">LRS</span>
-            </div>
+            <Image src="/images/logo.png" alt="Left Right Serve & Sign Pros" width={48} height={48} className="flex-shrink-0" />
             <div>
               <div className="text-white font-semibold text-sm">Left Right Serve</div>
               <div className="text-slate-500 text-xs">&amp; Sign Pros, LLC</div>
@@ -19,6 +18,7 @@ export function Footer() {
           <div className="space-y-1 text-sm">
             <div><a href={`tel:${process.env.NEXT_PUBLIC_COMPANY_PHONE}`} className="hover:text-[#C9A84C] transition-colors">{process.env.NEXT_PUBLIC_COMPANY_PHONE}</a></div>
             <div><a href={`mailto:${process.env.NEXT_PUBLIC_COMPANY_EMAIL}`} className="hover:text-[#C9A84C] transition-colors">{process.env.NEXT_PUBLIC_COMPANY_EMAIL}</a></div>
+            <div className="pt-1 text-slate-500 leading-relaxed">2999 Kendall Dr. Suite #204<br />PMB-1004<br />San Bernardino, CA 92407</div>
           </div>
         </div>
         <div>

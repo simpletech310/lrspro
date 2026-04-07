@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X, Phone, ArrowRight } from 'lucide-react'
 
@@ -15,9 +16,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0A1628]/95 backdrop-blur-sm border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 sm:gap-3">
-          <div className="w-8 h-8 bg-[#C9A84C] rounded-sm flex items-center justify-center flex-shrink-0">
-            <span className="text-[#0A1628] font-bold text-sm">LRS</span>
-          </div>
+          <Image src="/images/logo.png" alt="Left Right Serve & Sign Pros" width={44} height={44} className="flex-shrink-0" priority />
           <div className="hidden sm:block">
             <div className="text-white font-semibold text-sm leading-tight">Left Right Serve</div>
             <div className="text-[#C9A84C] text-xs">&amp; Sign Pros</div>

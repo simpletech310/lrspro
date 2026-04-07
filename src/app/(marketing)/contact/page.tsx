@@ -53,8 +53,17 @@ export default function ContactPage() {
                     <MapPin size={16} className="text-[#0A1628]" />
                   </div>
                   <div>
-                    <div className="font-semibold text-[#0A1628] text-sm mb-0.5">Coverage</div>
-                    <p className="text-slate-600 text-sm">Riverside &middot; San Bernardino<br />Orange &middot; Los Angeles</p>
+                    <div className="font-semibold text-[#0A1628] text-sm mb-0.5">Address</div>
+                    <p className="text-slate-600 text-sm">2999 Kendall Dr. Suite #204<br />PMB-1004<br />San Bernardino, CA 92407</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 bg-[#0A1628]/5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MapPin size={16} className="text-[#0A1628]" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[#0A1628] text-sm mb-0.5">Coverage Area</div>
+                    <p className="text-slate-600 text-sm">San Bernardino &middot; Riverside<br />Orange &middot; Los Angeles</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">

@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -6,16 +5,20 @@ import { Navbar } from '@/components/marketing/Navbar'
 import { Footer } from '@/components/marketing/Footer'
 import { FAQ } from '@/components/marketing/FAQ'
 import { CTABanner } from '@/components/marketing/CTABanner'
-import { getServicePageData, getAllServiceSlugs } from '@/lib/services'
+import { getServicePageData, getAllServiceSlugs } from '@/lib/cms'
+import { createClient } from '@/lib/supabase/server'
 import { formatCurrency } from '@/lib/utils'
 import { Check, Clock, Shield, ArrowRight, Phone } from 'lucide-react'
 
+export const revalidate = 3600
+
 export async function generateStaticParams() {
-  return getAllServiceSlugs().map(slug => ({ slug }))
+  const slugs = await getAllServiceSlugs()
+  return slugs.map(slug => ({ slug }))
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const page = getServicePageData(params.slug)
+  const page = await getServicePageData(params.slug)
   if (!page) return {}
   return {
     title: page.metaTitle,
@@ -29,7 +32,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ServiceDetailPage({ params }: { params: { slug: string } }) {
-  const page = getServicePageData(params.slug)
+  const page = await getServicePageData(params.slug)
   if (!page) notFound()
 
   const supabase = createClient()

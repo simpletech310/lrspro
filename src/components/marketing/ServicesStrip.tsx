@@ -1,15 +1,21 @@
 import Link from 'next/link'
-import { FileText, Stamp, Search, Truck, FileEdit, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
+import { getActiveServices } from '@/lib/cms'
+import { getIcon } from '@/lib/icons'
+import { formatCurrency } from '@/lib/utils'
 
-const SERVICES = [
-  {icon:FileText, name:'Process Serving', slug:'process-serving-riverside-ca', price:'From $89', desc:'Personal, substituted, and posting service across 4 counties'},
-  {icon:Stamp, name:'Mobile Notary', slug:'mobile-notary-riverside-ca', price:'From $95', desc:'Certified loan signings, affidavits, and mobile notarization'},
-  {icon:Search, name:'Skip Trace', slug:'skip-trace', price:'From $75', desc:'Professional subject location using licensed databases'},
-  {icon:Truck, name:'Court Courier', slug:'court-courier-filing', price:'From $75', desc:'Same-day filing, document retrieval, and courthouse runs'},
-  {icon:FileEdit, name:'Legal Document Prep', slug:'legal-document-service', price:'From $95', desc:'LDA-licensed document preparation for civil and family matters'},
-]
+export async function ServicesStrip() {
+  const services = await getActiveServices()
 
-export function ServicesStrip() {
+  // Map db slugs to SEO slugs for service page links
+  const seoSlugMap: Record<string, string> = {
+    'process-serving': 'process-serving-riverside-ca',
+    'notary': 'mobile-notary-riverside-ca',
+    'skip-trace': 'skip-trace',
+    'court-courier': 'court-courier-filing',
+    'legal-document-service': 'legal-document-service',
+  }
+
   return (
     <section className="bg-[#F8F5EE] py-16 sm:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -19,16 +25,20 @@ export function ServicesStrip() {
           <p className="text-slate-500 max-w-xl mx-auto text-sm sm:text-base">Every engagement is handled by a licensed professional with real-time tracking, documented outcomes, and court-ready deliverables.</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-          {SERVICES.map(({icon:Icon,name,slug,price,desc})=>(
-            <Link key={slug} href={`/services/${slug}`} className="group bg-white border border-slate-200 rounded-sm p-4 sm:p-6 hover:border-[#C9A84C] hover:shadow-card transition-all duration-200 flex flex-col">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-[#0A1628] transition-colors flex-shrink-0">
-                <Icon size={20} className="text-[#0A1628] group-hover:text-[#C9A84C] transition-colors" />
-              </div>
-              <h3 className="font-semibold text-[#0A1628] text-xs sm:text-sm mb-1 text-center">{name}</h3>
-              <p className="text-slate-400 text-[11px] sm:text-xs text-center mb-2 flex-1 hidden sm:block">{desc}</p>
-              <p className="text-[#C9A84C] text-xs font-semibold text-center">{price}</p>
-            </Link>
-          ))}
+          {services.map((service) => {
+            const Icon = getIcon(service.icon_name)
+            const slug = seoSlugMap[service.slug] || service.slug
+            return (
+              <Link key={service.id} href={`/services/${slug}`} className="group bg-white border border-slate-200 rounded-sm p-4 sm:p-6 hover:border-[#C9A84C] hover:shadow-card transition-all duration-200 flex flex-col">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0A1628]/5 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:bg-[#0A1628] transition-colors flex-shrink-0">
+                  <Icon size={20} className="text-[#0A1628] group-hover:text-[#C9A84C] transition-colors" />
+                </div>
+                <h3 className="font-semibold text-[#0A1628] text-xs sm:text-sm mb-1 text-center">{service.name}</h3>
+                <p className="text-slate-400 text-[11px] sm:text-xs text-center mb-2 flex-1 hidden sm:block">{service.short_description}</p>
+                <p className="text-[#C9A84C] text-xs font-semibold text-center">From {formatCurrency(service.base_price)}</p>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>
