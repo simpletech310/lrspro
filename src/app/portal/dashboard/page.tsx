@@ -18,21 +18,21 @@ export default async function PortalDashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-[#0A1628]">Welcome back, {profile?.full_name?.split(' ')[0]}</h1>
-          <p className="text-slate-500 mt-1">Here's your case overview</p>
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-[#0A1628]">Welcome back, {profile?.full_name?.split(' ')[0]}</h1>
+          <p className="text-slate-500 mt-1 text-sm">Here&apos;s your case overview</p>
         </div>
-        <Link href="/portal/new-order" className="inline-flex items-center gap-2 bg-[#C9A84C] text-[#0A1628] px-5 py-2.5 font-semibold rounded-sm hover:bg-[#E8C96A] transition-colors">
+        <Link href="/portal/new-order" className="inline-flex items-center justify-center gap-2 bg-[#C9A84C] text-[#0A1628] px-5 py-2.5 font-semibold rounded-sm hover:bg-[#E8C96A] transition-colors text-sm">
           <Plus size={16} /> New Order
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {[{label:'Active Cases',value:active.length,color:'text-[#0A1628]'},{label:'Completed',value:completed.length,color:'text-emerald-600'},{label:'Total Spent',value:formatCurrency(totalSpent),color:'text-[#C9A84C]'}].map(s=>(
-          <div key={s.label} className="bg-white border border-slate-200 rounded-sm p-5 shadow-card">
-            <div className="text-slate-500 text-sm mb-1">{s.label}</div>
-            <div className={`font-display text-3xl font-bold ${s.color}`}>{s.value}</div>
+          <div key={s.label} className="bg-white border border-slate-200 rounded-sm p-4 sm:p-5 shadow-card">
+            <div className="text-slate-500 text-xs sm:text-sm mb-1">{s.label}</div>
+            <div className={`font-display text-2xl sm:text-3xl font-bold ${s.color}`}>{s.value}</div>
           </div>
         ))}
       </div>

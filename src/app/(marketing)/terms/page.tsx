@@ -5,6 +5,11 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Terms of Service | Left Right Serve & Sign Pros',
   description: 'Terms of Service for Left Right Serve & Sign Pros, LLC. Review the terms governing the use of our legal support services and client portal.',
+  openGraph: {
+    title: 'Terms of Service | Left Right Serve & Sign Pros',
+    description: 'Terms of Service for Left Right Serve & Sign Pros, LLC. Review the terms governing the use of our legal support services and client portal.',
+    images: [{ url: '/og/og-home.png', width: 1792, height: 1024 }],
+  },
 }
 
 export default function TermsPage() {

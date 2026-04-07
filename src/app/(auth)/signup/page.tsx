@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { z } from 'zod'
@@ -47,14 +48,12 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1628] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#0A1628] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-[#C9A84C] rounded-sm flex items-center justify-center mx-auto mb-4">
-            <span className="text-[#0A1628] font-bold text-xl">LRS</span>
-          </div>
-          <h1 className="font-display text-white text-3xl font-bold">Create Account</h1>
-          <p className="text-slate-400 mt-2">Join our client portal</p>
+          <Image src="/images/logo.png" alt="Left Right Serve & Sign Pros" width={56} height={56} className="mx-auto mb-4 drop-shadow-lg" priority />
+          <h1 className="font-display text-white text-2xl sm:text-3xl font-bold">Create Account</h1>
+          <p className="text-slate-400 mt-2 text-sm sm:text-base">Join our client portal</p>
         </div>
         <div className="bg-white rounded-sm shadow-elevated p-8">
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

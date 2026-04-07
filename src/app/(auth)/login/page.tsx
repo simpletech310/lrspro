@@ -1,6 +1,7 @@
 'use client'
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { z } from 'zod'
@@ -84,16 +85,20 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-[#0A1628] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0A1628] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-[#C9A84C] rounded-sm flex items-center justify-center mx-auto mb-4">
-            <span className="text-[#0A1628] font-bold text-xl">LRS</span>
-          </div>
-          <h1 className="font-display text-white text-3xl font-bold">Welcome Back</h1>
-          <p className="text-slate-400 mt-2">Sign in to your portal</p>
+          <Image src="/images/logo.png" alt="Left Right Serve & Sign Pros" width={56} height={56} className="mx-auto mb-4 drop-shadow-lg" priority />
+          <h1 className="font-display text-white text-2xl sm:text-3xl font-bold">Welcome Back</h1>
+          <p className="text-slate-400 mt-2 text-sm sm:text-base">Sign in to your portal</p>
         </div>
-        <Suspense fallback={<div className="bg-white rounded-sm shadow-elevated p-8 text-center text-slate-400">Loading...</div>}>
+        <Suspense fallback={
+          <div className="bg-white rounded-sm shadow-elevated p-8 space-y-5">
+            <div className="space-y-2"><div className="h-4 w-24 bg-slate-200 rounded animate-pulse" /><div className="h-10 w-full bg-slate-100 rounded animate-pulse" /></div>
+            <div className="space-y-2"><div className="h-4 w-20 bg-slate-200 rounded animate-pulse" /><div className="h-10 w-full bg-slate-100 rounded animate-pulse" /></div>
+            <div className="h-11 w-full bg-slate-200 rounded animate-pulse" />
+          </div>
+        }>
           <LoginForm />
         </Suspense>
       </div>

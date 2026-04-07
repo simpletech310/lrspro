@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { LogoutButton } from '@/components/LogoutButton'
 import { LayoutDashboard, Briefcase, FileText, PlusCircle, User, Menu, X } from 'lucide-react'
@@ -23,9 +24,7 @@ export function PortalNav({ fullName }: { fullName: string }) {
       <header className="bg-[#0A1628] text-white">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/portal/dashboard" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#C9A84C] rounded-sm flex items-center justify-center">
-              <span className="text-[#0A1628] font-bold text-sm">LRS</span>
-            </div>
+            <Image src="/images/logo.png" alt="Left Right Serve & Sign Pros" width={32} height={32} className="rounded-sm" />
             <span className="text-sm font-medium hidden sm:block">Client Portal</span>
           </Link>
 

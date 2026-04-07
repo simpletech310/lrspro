@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
 export default function ForgotPasswordPage() {
@@ -18,11 +19,14 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1628] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0A1628] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-sm shadow-elevated p-8">
-          <h1 className="font-display text-[#0A1628] text-2xl font-bold mb-2">Reset Password</h1>
-          <p className="text-slate-500 mb-6">Enter your email to receive a reset link.</p>
+        <div className="text-center mb-8">
+          <Image src="/images/logo.png" alt="Left Right Serve & Sign Pros" width={56} height={56} className="mx-auto mb-4 drop-shadow-lg" priority />
+        </div>
+        <div className="bg-white rounded-sm shadow-elevated p-6 sm:p-8">
+          <h1 className="font-display text-[#0A1628] text-xl sm:text-2xl font-bold mb-2">Reset Password</h1>
+          <p className="text-slate-500 mb-6 text-sm sm:text-base">Enter your email to receive a reset link.</p>
           {sent ? (
             <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-sm text-emerald-700">
               Check your email for a password reset link.

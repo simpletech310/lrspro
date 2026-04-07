@@ -7,6 +7,11 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Contact Us — Reach Our Team | Left Right Serve & Sign Pros',
   description: 'Contact Left Right Serve & Sign Pros for process serving, mobile notary, skip trace, court courier, and legal document services across Riverside, San Bernardino, Orange, and LA counties. We respond within 1 business hour.',
+  openGraph: {
+    title: 'Contact Us | Left Right Serve & Sign Pros',
+    description: 'Reach our team for process serving, mobile notary, skip trace, and court courier services across Southern California. We respond within 1 business hour.',
+    images: [{ url: '/og/og-home.png', width: 1792, height: 1024 }],
+  },
 }
 
 export default function ContactPage() {

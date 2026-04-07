@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { LogoutButton } from '@/components/LogoutButton'
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
 
@@ -20,9 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <aside className="w-64 bg-[#0A1628] text-white flex-shrink-0 flex flex-col hidden md:flex">
         <div className="p-6 border-b border-white/10">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#C9A84C] rounded-sm flex items-center justify-center">
-              <span className="text-[#0A1628] font-bold text-sm">LRS</span>
-            </div>
+            <Image src="/images/logo.png" alt="LRS" width={32} height={32} className="rounded-sm" />
             <div>
               <div className="text-sm font-semibold">Staff Portal</div>
               <div className="text-[#C9A84C] text-xs capitalize">{profile.role}</div>
@@ -38,9 +37,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A1628] text-white px-4 h-14 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#C9A84C] rounded-sm flex items-center justify-center">
-            <span className="text-[#0A1628] font-bold text-xs">LRS</span>
-          </div>
+          <Image src="/images/logo.png" alt="LRS" width={28} height={28} className="rounded-sm" />
           <span className="text-sm font-semibold">Staff Portal</span>
         </Link>
         <LogoutButton className="text-slate-400 hover:text-white text-sm" />

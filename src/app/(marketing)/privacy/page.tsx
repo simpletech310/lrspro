@@ -5,6 +5,11 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Privacy Policy | Left Right Serve & Sign Pros',
   description: 'Privacy Policy for Left Right Serve & Sign Pros, LLC. Learn how we collect, use, and protect your personal information.',
+  openGraph: {
+    title: 'Privacy Policy | Left Right Serve & Sign Pros',
+    description: 'Privacy Policy for Left Right Serve & Sign Pros, LLC. Learn how we collect, use, and protect your personal information.',
+    images: [{ url: '/og/og-home.png', width: 1792, height: 1024 }],
+  },
 }
 
 export default function PrivacyPage() {
