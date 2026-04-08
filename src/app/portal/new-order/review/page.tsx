@@ -12,6 +12,7 @@ export default function ReviewPage() {
   const [orderData, setOrderData] = useState<Record<string, any>>({})
   const [priority, setPriority] = useState('standard')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [initLoading, setInitLoading] = useState(true)
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function ReviewPage() {
 
   const handleCheckout = async () => {
     setLoading(true)
+    setError('')
     try {
       const res = await fetch('/api/orders/checkout', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -45,9 +47,9 @@ export default function ReviewPage() {
       const data = await res.json()
       if (data.url) window.location.href = data.url
       else throw new Error(data.error || 'Failed to create checkout')
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      alert("Checkout failed. Please try again.")
+      setError(err?.message || 'Checkout failed. Please try again.')
       setLoading(false)
     }
   }
@@ -121,6 +123,7 @@ export default function ReviewPage() {
               <span className="font-display text-2xl text-[#C9A84C] font-bold">{formatCurrency(calculateTotal())}</span>
             </div>
           </div>
+          {error && <p className="text-red-400 text-sm bg-red-950/30 border border-red-500/30 p-3 rounded-sm mb-4">{error}</p>}
           <button onClick={handleCheckout} disabled={loading}
             className="w-full bg-[#C9A84C] text-[#0A1628] py-3.5 font-bold rounded-sm hover:bg-[#E8C96A] transition-colors disabled:opacity-50">
             {loading ? 'Processing...' : 'Proceed to Checkout'}

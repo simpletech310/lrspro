@@ -30,7 +30,9 @@ export function checkCsrf(request: NextRequest): NextResponse | null {
     'http://localhost:3000',
   ].filter(Boolean)
 
+  // Allow exact matches and Vercel preview deployments
   if (allowedOrigins.some(allowed => origin === allowed)) return null
+  if (origin.endsWith('.vercel.app')) return null
 
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 }
