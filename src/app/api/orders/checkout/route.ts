@@ -6,6 +6,11 @@ import { checkCsrf } from '@/lib/security'
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('STRIPE_SECRET_KEY is not set')
+      return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 })
+    }
+
     const csrfError = checkCsrf(request)
     if (csrfError) return csrfError
 
